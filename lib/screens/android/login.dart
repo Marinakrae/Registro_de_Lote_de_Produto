@@ -23,7 +23,7 @@ class Login extends StatelessWidget {
               //mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.fromLTRB(20, 50, 20, 40),
+                  padding: EdgeInsets.fromLTRB(20, 50, 20, 30),
                   child: Image.asset('lib/assets/logo.png', height: 110),
                 ),
                 Container(
@@ -39,7 +39,7 @@ class Login extends StatelessWidget {
                     )
                 ),
                 Container(
-                  padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
                   child: TextField(
                     decoration: InputDecoration(
                       border: OutlineInputBorder(

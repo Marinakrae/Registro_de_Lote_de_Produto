@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:registro_lote_casa_de_cha/screens/android/listaLotes.dart';
 import 'package:registro_lote_casa_de_cha/screens/android/login.dart';
 import 'package:registro_lote_casa_de_cha/screens/android/registroLote.dart';
 
@@ -49,6 +50,28 @@ class BoasVindas extends StatelessWidget {
                     Icon(Icons.add_circle_outline),
                     SizedBox(width: 8),
                     Text("Registrar lote de produto"),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size.fromHeight(50),
+                  backgroundColor: Colors.pinkAccent,
+                ),
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return ListaLotesCadastradosPage(loteDAO );
+                  }));
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.list_alt_outlined),
+                    SizedBox(width: 8),
+                    Text("Lista de lotes registrados"),
                   ],
                 ),
               ),
