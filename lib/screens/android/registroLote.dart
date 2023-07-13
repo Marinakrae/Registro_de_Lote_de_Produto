@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,10 +11,21 @@ import 'package:intl/intl.dart';
 import 'package:registro_lote_casa_de_cha/dao/loteDAO.dart';
 import 'package:registro_lote_casa_de_cha/model/Lote.dart';
 import 'package:registro_lote_casa_de_cha/screens/android/boasVindas.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
+import 'listaLotes.dart';
+
+class Produto {
+  final int id;
+  final String nome;
+
+  Produto(this.id, this.nome);
+}
 
 class RegistroLote extends StatefulWidget {
-  const RegistroLote({Key? key}) : super(key: key);
+  final Lote? lote;
+
+  const RegistroLote({Key? key, this.lote}) : super(key: key);
 
   @override
   State<RegistroLote> createState() => _RegistroLoteState();
@@ -24,7 +36,6 @@ class _RegistroLoteState extends State<RegistroLote> {
   String _dataRecebimento = '';
   File? _imagePreview;
 
-  //Valores dos campos
   late TextEditingController _quantidadeController;
   late TextEditingController _dataValidadeController;
   late TextEditingController _dataRecebimentoController;
@@ -34,11 +45,22 @@ class _RegistroLoteState extends State<RegistroLote> {
   @override
   void initState() {
     super.initState();
-    _setDataHoraAtual();
 
     _quantidadeController = TextEditingController();
     _dataValidadeController = TextEditingController();
-    _dataRecebimentoController = TextEditingController(text: _dataRecebimento);
+    _dataRecebimentoController = TextEditingController();
+
+    if (widget.lote != null) {
+      _quantidadeController.text = widget.lote!.quantidade.toString();
+      _dataValidadeController.text = widget.lote!.dataValidade;
+      _dataRecebimentoController.text = widget.lote!.dataRecebimento;
+      _dataRecebimento = widget.lote!.dataRecebimento;
+
+      // Selecionar o produto correspondente ao ID do lote
+      _selectedProductId = widget.lote!.id_produto.toString();
+    } else {
+      _setDataHoraAtual();
+    }
   }
 
   @override
@@ -57,23 +79,30 @@ class _RegistroLoteState extends State<RegistroLote> {
   }
 
   void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: Duration(seconds: 2),
-      ),
-    );
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //     content: Text(message),
+    //     duration: Duration(seconds: 2),
+    //   ),
+    // );
   }
 
-  String _selectedProduct = 'Produto A';
-  List<String> _products = [
-    'Produto A',
-    'Produto B',
-    'Produto C',
+  String _selectedProductId = '1';
+  List<Produto> _products = [
+    Produto(1, 'Produto A'),
+    Produto(2, 'Produto B'),
+    Produto(3, 'Produto C'),
   ];
+
+  Produto getSelectedProduct() {
+    int selectedId = int.parse(_selectedProductId);
+    return _products.firstWhere((produto) => produto.id == selectedId);
+  }
 
   @override
   Widget build(BuildContext context) {
+    _dataRecebimentoController.text = _dataRecebimento;
+
     return MaterialApp(
       home: Scaffold(
         key: _scaffoldKey,
@@ -100,8 +129,10 @@ class _RegistroLoteState extends State<RegistroLote> {
                     SizedBox(height: 16),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                      child: Text('Selecione um produto:',
-                          style: TextStyle(fontSize: 16)),
+                      child: Text(
+                        'Selecione um produto:',
+                        style: TextStyle(fontSize: 16),
+                      ),
                     ),
                     SizedBox(height: 8),
                     Padding(
@@ -109,17 +140,17 @@ class _RegistroLoteState extends State<RegistroLote> {
                       child: Container(
                         width: double.infinity,
                         child: DropdownButton(
-                          value: _selectedProduct,
-                          items: _products.map((String value) {
+                          value: _selectedProductId,
+                          items: _products.map((Produto produto) {
                             return DropdownMenuItem(
-                              value: value,
-                              child: Text(value),
+                              value: produto.id.toString(),
+                              child: Text(produto.nome),
                             );
                           }).toList(),
                           hint: Text('Selecione um produto'),
                           onChanged: (String? newValue) {
                             setState(() {
-                              _selectedProduct = newValue ?? '';
+                              _selectedProductId = newValue ?? '';
                             });
                           },
                         ),
@@ -132,14 +163,16 @@ class _RegistroLoteState extends State<RegistroLote> {
                 padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
                 child: Container(
                   child: TextField(
-                      controller: _quantidadeController,
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(80.0)),
-                          labelText: 'Quantidade recebida:',
-                          prefixIcon:
-                          Icon(Icons.add_business_outlined)),
-                      keyboardType: TextInputType.number),
+                    controller: _quantidadeController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(80.0),
+                      ),
+                      labelText: 'Quantidade recebida:',
+                      prefixIcon: Icon(Icons.add_business_outlined),
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
                 ),
               ),
               Padding(
@@ -164,10 +197,12 @@ class _RegistroLoteState extends State<RegistroLote> {
                   child: TextField(
                     controller: _dataRecebimentoController,
                     decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(80.0)),
-                        labelText: 'Data de recebimento:',
-                        prefixIcon: Icon(Icons.timer_outlined)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(80.0),
+                      ),
+                      labelText: 'Data de recebimento:',
+                      prefixIcon: Icon(Icons.timer_outlined),
+                    ),
                   ),
                 ),
               ),
@@ -176,16 +211,17 @@ class _RegistroLoteState extends State<RegistroLote> {
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                      onPressed: () {
-                        pickImage();
-                      },
-                      style: ButtonStyle(
-                        backgroundColor:
-                        MaterialStateProperty.all<Color>(
-                            Colors.pinkAccent),
+                    onPressed: () {
+                      pickImage();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                        Colors.pinkAccent,
                       ),
-                      icon: Icon(Icons.camera_alt, color: Colors.white),
-                      label: Text('Tirar uma foto')),
+                    ),
+                    icon: Icon(Icons.camera_alt, color: Colors.white),
+                    label: Text('Tirar uma foto'),
+                  ),
                 ),
               ),
               Image(
@@ -202,35 +238,78 @@ class _RegistroLoteState extends State<RegistroLote> {
                     onPressed: () {
                       if (_imagePreview != null) {
                         convertImageToBase64(_imagePreview!).then((base64Image) {
-                          // Lote lote = Lote(
-                          //   200,
-                          //   _dataValidadeController.text,
-                          //   _dataRecebimentoController.text,
-                          //   int.parse(_quantidadeController.text),
-                          //   100,
-                          //   base64Image,
-                          // );
-                          Lote loteSemImagem = Lote (
-                            200,
-                            _dataValidadeController.text,
-                            _dataRecebimentoController.text,
-                            int.parse(_quantidadeController.text),
-                            100
+                          Produto selectedProduct = getSelectedProduct();
+                          int selectedProductId = selectedProduct.id;
+
+                          int idLote = DateTime.now().microsecondsSinceEpoch;
+
+                          Lote lote = Lote(
+                              idLote,
+                              _dataValidadeController.text,
+                              _dataRecebimento != null ? _dataRecebimento : _dataRecebimentoController.text,
+                              int.parse(_quantidadeController.text),
+                              selectedProduct.id
                           );
-                          LoteDAO().adicionar(loteSemImagem);
 
-                          // Exibir mensagem de sucesso
-                          _showSnackBar('Cadastro realizado com sucesso');
-
-                          // Voltar para a tela anterior após 2 segundos
-                          Future.delayed(Duration(seconds: 2), () {
-                            Navigator.pop(context);
-                          });
+                          if (widget.lote != null) {
+                            lote.id_Lote = widget.lote!.id_Lote;
+                            LoteDAO().atualizar(lote).then((value) {
+                              _showSnackBar('Lote atualizado com sucesso!');
+                              Fluttertoast.showToast(
+                                  msg: "Lote atualizado com sucesso!",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.green,
+                                  textColor: Colors.white,
+                                  fontSize: 16.0
+                              );
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(builder: (context) => ListaLotesCadastradosPage()),
+                                    (Route<dynamic> route) => false,
+                              );
+                            });
+                          } else {
+                            LoteDAO().adicionar(lote).then((value) {
+                              _showSnackBar('Lote registrado com sucesso!');
+                              Fluttertoast.showToast(
+                                  msg: "Lote registrado com sucesso!",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.green,
+                                  textColor: Colors.white,
+                                  fontSize: 16.0
+                              );
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(builder: (context) => ListaLotesCadastradosPage()),
+                                    (Route<dynamic> route) => false,
+                              );
+                            });
+                          }
                         });
+                      } else {
+                        _showSnackBar('Por favor, tire uma foto do lote.');
+                        Fluttertoast.showToast(
+                            msg: "Por favor, tire uma foto do lote.",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.CENTER,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.red,
+                            textColor: Colors.white,
+                            fontSize: 16.0
+                        );
                       }
                     },
-                    icon: Icon(Icons.save_outlined, color: Colors.white),
-                    label: Text('Salvar', style: TextStyle(color: Colors.white)),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                        Colors.pinkAccent,
+                      ),
+                    ),
+                    icon: Icon(Icons.save, color: Colors.white),
+                    label: Text('Salvar'),
                   ),
                 ),
               ),
@@ -261,27 +340,15 @@ class _RegistroLoteState extends State<RegistroLote> {
   }
 
   Future<void> pickImage() async {
-    try {
-      final ImagePicker picker = ImagePicker();
+    final picker = ImagePicker();
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
 
-      final XFile? image = await picker.pickImage(source: ImageSource.camera);
-
+    if (pickedFile != null) {
       setState(() {
-        if (image != null) {
-          _imagePreview = File(image.path);
-        } else {
-          return;
-        }
+        _imagePreview = File(pickedFile.path);
       });
-    } on PlatformException catch (e) {
-      print('Falha em abrir a imagem: $e');
     }
   }
-
-  var maskFormatter = MaskTextInputFormatter(
-    mask: 'dd/mm/yyyy',
-    type: MaskAutoCompletionType.eager,
-  );
 
   Future<String> convertImageToBase64(File imageFile) async {
     List<int> imageBytes = await imageFile.readAsBytes();

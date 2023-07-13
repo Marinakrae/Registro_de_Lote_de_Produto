@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:registro_lote_casa_de_cha/dao/loteDAO.dart';
 import 'package:registro_lote_casa_de_cha/screens/android/listaLotes.dart';
 import 'package:registro_lote_casa_de_cha/screens/android/login.dart';
 import 'package:registro_lote_casa_de_cha/screens/android/registroLote.dart';
+
+import '../../model/Lote.dart';
 
 class BoasVindas extends StatelessWidget {
   const BoasVindas({Key? key}) : super(key: key);
@@ -59,11 +62,12 @@ class BoasVindas extends StatelessWidget {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size.fromHeight(50),
-                  backgroundColor: Colors.pinkAccent,
+                  backgroundColor: Colors.blueAccent,
                 ),
                 onPressed: () {
+                  LoteDAO loteDao = LoteDAO();
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return ListaLotesCadastradosPage(loteDAO );
+                    return ListaLotesCadastradosPage();
                   }));
                 },
                 child: Row(

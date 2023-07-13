@@ -6,7 +6,14 @@ class Lote {
   int id_produto;
   //String imagemBase64;
 
-  Lote(this.id_Lote, this.dt_validade, this.dt_registro, this.qtd_lote, this.id_produto);//, //this.imagemBase64);
+  Lote(this.id_Lote, this.dt_validade, this.dt_registro, this.qtd_lote, this.id_produto);
+
+  int get quantidade => qtd_lote;
+
+  String get dataValidade => dt_validade;
+
+  String get dataRecebimento => dt_registro;
+//, //this.imagemBase64);
 
   Map<String, dynamic> toMap() {
     return {

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:registro_lote_casa_de_cha/screens/android/boasVindas.dart';
 import 'package:registro_lote_casa_de_cha/screens/android/registroLote.dart';
+import 'package:registro_lote_casa_de_cha/service/loginService.dart';
 
 import 'imc.dart';
 
 class Login extends StatelessWidget {
-  const Login({Key? key}) : super(key: key);
+  //const Login({Key? key}) : super(key: key);
+
+  final loginController = TextEditingController();
+  final senhaController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +63,7 @@ class Login extends StatelessWidget {
                     ),
                     onPressed: (){
                       Navigator.push(context, MaterialPageRoute(builder: (context){
+                        logar(loginController.Value.text, senhaController.Value.text, context);
                         return BoasVindas();
                       }));
                     },
@@ -79,4 +84,12 @@ class Login extends StatelessWidget {
       ),
     );
   }
+}
+
+logar(String login, String senha, BuildContext context) {
+  new LoginService().login(login, senha).then((value)=> {
+    if(value){
+      return BoasVindas();
+    }
+  });
 }
