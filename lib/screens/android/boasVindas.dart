@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:registro_lote_casa_de_cha/dao/loteDAO.dart';
 import 'package:registro_lote_casa_de_cha/screens/android/listaLotes.dart';
+import 'package:registro_lote_casa_de_cha/screens/android/listaProdutos.dart';
 import 'package:registro_lote_casa_de_cha/screens/android/login.dart';
 import 'package:registro_lote_casa_de_cha/screens/android/registroLote.dart';
 
 import '../../model/Lote.dart';
+import '../../model/login.dart';
 
 class BoasVindas extends StatelessWidget {
+
+  // final Login usuarioLogado;
+  //
+  // const BoasVindas({Key? key, required this.usuarioLogado}) : super(key: key);
+
   const BoasVindas({Key? key}) : super(key: key);
 
   @override
@@ -80,6 +87,28 @@ class BoasVindas extends StatelessWidget {
                 ),
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size.fromHeight(50),
+                  backgroundColor: Colors.blueAccent,
+                ),
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return MyApp();
+                  }));
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.list_alt_outlined),
+                    SizedBox(width: 8),
+                    Text("Lista de produtos"),
+                  ],
+                ),
+              ),
+            ),
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
@@ -89,7 +118,7 @@ class BoasVindas extends StatelessWidget {
                   child: ElevatedButton.icon(
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return Login();
+                        return LoginPage();
                       }));
                     },
                     style: ButtonStyle(

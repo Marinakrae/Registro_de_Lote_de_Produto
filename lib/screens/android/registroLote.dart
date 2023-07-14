@@ -12,7 +12,9 @@ import 'package:registro_lote_casa_de_cha/dao/loteDAO.dart';
 import 'package:registro_lote_casa_de_cha/model/Lote.dart';
 import 'package:registro_lote_casa_de_cha/screens/android/boasVindas.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 
+import '../../model/login.dart';
 import 'listaLotes.dart';
 
 class Produto {
@@ -20,12 +22,16 @@ class Produto {
   final String nome;
 
   Produto(this.id, this.nome);
+
+  get title => null;
 }
 
 class RegistroLote extends StatefulWidget {
   final Lote? lote;
+  //final Login usuarioLogado;
 
   const RegistroLote({Key? key, this.lote}) : super(key: key);
+  //const RegistroLote({Key? key, this.lote, required this.usuarioLogado}) : super(key: key);
 
   @override
   State<RegistroLote> createState() => _RegistroLoteState();
@@ -41,6 +47,8 @@ class _RegistroLoteState extends State<RegistroLote> {
   late TextEditingController _dataRecebimentoController;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  get usuarioLogado => this.usuarioLogado;
 
   @override
   void initState() {

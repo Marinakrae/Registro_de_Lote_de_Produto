@@ -5,6 +5,6 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   runApp(MaterialApp(
-    home: Login(),
+    home: LoginPage(),
   ));
 }

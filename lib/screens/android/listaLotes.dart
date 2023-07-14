@@ -3,10 +3,18 @@ import 'package:registro_lote_casa_de_cha/screens/android/registroLote.dart';
 
 import '../../dao/loteDAO.dart';
 import '../../model/Lote.dart';
+import '../../model/login.dart';
+import '../../service/loteService.dart';
 import 'boasVindas.dart';
 
 class ListaLotesCadastradosPage extends StatelessWidget {
-  LoteDAO loteDao = LoteDAO();
+  final LoteDAO loteDao = LoteDAO();
+  //final Login usuarioLogado;
+  Future<Lote>? listaLotes;
+
+  // ListaLotesCadastradosPage({required this.usuarioLogado}) {
+  //   listaLotes = LoteService().getLotes(usuarioLogado!);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +42,7 @@ class ListaLotesCadastradosPage extends StatelessWidget {
           }
 
           final lotes = snapshot.data!;
+          //final lotes = LoteService().getLotes();
 
           return ListView.builder(
             itemCount: lotes.length,

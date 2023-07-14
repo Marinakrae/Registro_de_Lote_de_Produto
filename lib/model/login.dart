@@ -6,6 +6,10 @@ class Login {
 
   Login(this.login, this.senha, this.permissao, this.token);
 
+  static Login empty() {
+    return Login('', '', '', '');
+  }
+
   factory Login.fromJson(Map<String, dynamic> json){
     return Login(json['login'], json['senha'],
     json['permissao'], json['token']);

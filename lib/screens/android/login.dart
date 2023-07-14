@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:registro_lote_casa_de_cha/screens/android/boasVindas.dart';
+import 'package:registro_lote_casa_de_cha/screens/android/listaLotes.dart';
 import 'package:registro_lote_casa_de_cha/screens/android/registroLote.dart';
 import 'package:registro_lote_casa_de_cha/service/loginService.dart';
 
+import '../../model/login.dart';
 import 'imc.dart';
 
-class Login extends StatelessWidget {
+class LoginPage extends StatelessWidget {
   //const Login({Key? key}) : super(key: key);
 
   final loginController = TextEditingController();
   final senhaController = TextEditingController();
+  Login usuarioLogado = Login.empty();
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +37,7 @@ class Login extends StatelessWidget {
                 Container(
                     padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
                     child: TextField(
+                      controller: loginController,
                       decoration: InputDecoration(
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(80.0)
@@ -45,6 +50,7 @@ class Login extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
                   child: TextField(
+                    controller: senhaController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(80.0),
@@ -63,8 +69,11 @@ class Login extends StatelessWidget {
                     ),
                     onPressed: (){
                       Navigator.push(context, MaterialPageRoute(builder: (context){
-                        logar(loginController.Value.text, senhaController.Value.text, context);
-                        return BoasVindas();
+                        if (logar(loginController.value.text, senhaController.value.text, context)) {
+                          return BoasVindas();
+                        } else {
+                          return LoginPage();
+                        }
                       }));
                     },
                     child: Row(
@@ -87,9 +96,20 @@ class Login extends StatelessWidget {
 }
 
 logar(String login, String senha, BuildContext context) {
-  new LoginService().login(login, senha).then((value)=> {
-    if(value){
-      return BoasVindas();
-    }
-  });
+  // new LoginService().login(login, senha).then((value)=> {
+  // });
+  if (login == "marina@teste" && senha == "123"){
+    return true;
+  } else {
+    Fluttertoast.showToast(
+        msg: "Usuário não identificado",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0
+    );
+    return false;
+  }
 }
